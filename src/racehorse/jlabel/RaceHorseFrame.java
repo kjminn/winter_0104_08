@@ -84,7 +84,7 @@ public class RaceHorseFrame extends JFrame {
 				if(lblHorse.getX()==540) {
 					lblHorse.setIcon(new ImageIcon("images/"+stopImageName+".gif"));
 					winnerIndex[index++] = horseIndex;
-					if(horseIndex == horses.length-1) {
+					if(index == horses.length-1) {
 						JOptionPane.showMessageDialog(RaceHorseFrame.this, "축하합니다. "+(winnerIndex[0]+1)+"말이 우승!!!");
 						index = 0;
 					}
