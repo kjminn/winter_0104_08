@@ -1,8 +1,11 @@
 package racehorse.jlabel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,6 +27,9 @@ public class RaceHorseFrame extends JFrame {
 		pan.add(lineLbl);
 		pan.add(flagLbl);
 		
+		JButton btnStart = new JButton("게임시작");
+		btnStart.addActionListener(btnL);
+		
 		for (int i = 0; i < horses.length; i++) {
 			icon = new ImageIcon("images/small_horse"+(i+1)+".gif");
 			horses[i] = new JLabel(icon);
@@ -34,31 +40,39 @@ public class RaceHorseFrame extends JFrame {
 		
 		
 		add(pan, "Center");
-		
+		add(btnStart, "North");
 		setTitle("경주마게임");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setBounds(50, 30, 620, 500);
 		setVisible(true);
-		setResizable(false);
-		for (int i = 0; i < horses.length; i++) {
-			hts[i] = new HorseThread(horses[i], "stop_horse"+(i+1), i);
-			hts[i].start();
-		}
-		
+		setResizable(false);		
 	}
 
 	public static void main(String[] args) {
 		new RaceHorseFrame();
 	}
+	
+	ActionListener btnL = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (int i = 0; i < horses.length; i++) {
+				HorseThread t = new HorseThread(horses[i],"small_horse"+(i+1), "stop_horse"+(i+1), i);
+				t.start();
+			}
+		}
+	};
 
 	public class HorseThread extends Thread{
 		JLabel lblHorse;
+		String moveImageName;
 		String stopImageName;
 		int randomValue;
 		int horseIndex;
 		
-		public HorseThread(JLabel lblHorse, String stopImageName, int horseIndex) {
+		public HorseThread(JLabel lblHorse, String moveImageName, String stopImageName, int horseIndex) {
 			this.lblHorse = lblHorse;
+			this.moveImageName = moveImageName;
 			this.stopImageName = stopImageName;
 			this.horseIndex = horseIndex;
 		}
@@ -67,22 +81,25 @@ public class RaceHorseFrame extends JFrame {
 		public void run() {
 			while (true) {
 				lblHorse.setLocation(lblHorse.getX()+5, lblHorse.getY());
-				
 				if(lblHorse.getX()==540) {
 					lblHorse.setIcon(new ImageIcon("images/"+stopImageName+".gif"));
 					winnerIndex[index++] = horseIndex;
-					if(horseIndex == horses.length-1)
+					if(horseIndex == horses.length-1) {
 						JOptionPane.showMessageDialog(RaceHorseFrame.this, "축하합니다. "+(winnerIndex[0]+1)+"말이 우승!!!");
+						index = 0;
+					}
+					lblHorse.setLocation(0, lblHorse.getY());
+					lblHorse.setIcon(new ImageIcon("images/"+moveImageName+".gif"));
 					break;
 				}
 				try {
 					Random random = new Random();
 					randomValue = random.nextInt(10);
-					sleep(5 * randomValue);
+					sleep(10 * randomValue);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-			}
+			}			
 		}
 	}
 }
