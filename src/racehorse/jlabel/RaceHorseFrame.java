@@ -57,7 +57,7 @@ public class RaceHorseFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			for (int i = 0; i < horses.length; i++) {
-				HorseThread t = new HorseThread(horses[i],"small_horse"+(i+1), "stop_horse"+(i+1), i);
+				HorseThread t = new HorseThread(horses[i],"stop_horse"+(i+1), i);
 				t.start();
 			}
 		}
@@ -65,14 +65,12 @@ public class RaceHorseFrame extends JFrame {
 
 	public class HorseThread extends Thread{
 		JLabel lblHorse;
-		String moveImageName;
 		String stopImageName;
 		int randomValue;
 		int horseIndex;
 		
-		public HorseThread(JLabel lblHorse, String moveImageName, String stopImageName, int horseIndex) {
+		public HorseThread(JLabel lblHorse, String stopImageName, int horseIndex) {
 			this.lblHorse = lblHorse;
-			this.moveImageName = moveImageName;
 			this.stopImageName = stopImageName;
 			this.horseIndex = horseIndex;
 		}
@@ -87,9 +85,14 @@ public class RaceHorseFrame extends JFrame {
 					if(index == horses.length-1) {
 						JOptionPane.showMessageDialog(RaceHorseFrame.this, "축하합니다. "+(winnerIndex[0]+1)+"말이 우승!!!");
 						index = 0;
+						for (int i = 0; i < horses.length; i++) {
+							horses[i].setLocation(0, horses[i].getY());
+							horses[i].setIcon(new ImageIcon("images/small_horse"+(i+1)+".gif"));
+						}
+						
 					}
-					lblHorse.setLocation(0, lblHorse.getY());
-					lblHorse.setIcon(new ImageIcon("images/"+moveImageName+".gif"));
+//					lblHorse.setLocation(0, lblHorse.getY());
+//					lblHorse.setIcon(new ImageIcon("images/"+moveImageName+".gif"));
 					break;
 				}
 				try {
