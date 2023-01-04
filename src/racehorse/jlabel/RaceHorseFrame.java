@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -16,6 +17,9 @@ public class RaceHorseFrame extends JFrame {
 	HorseThread[] hts = new HorseThread[horses.length];
 	int[] winnerIndex = new int[horses.length];
 	int index;
+	String[] comboStr = {"1번: Shining White", "2번: Black and White", "3번: Scream Tiger", "4번: Blue Hipo", "5번: Kind Elephant"};
+	JComboBox<String> combo = new JComboBox<String>(comboStr);
+	int betingIndex;
 	
 	public RaceHorseFrame() {		
 		JPanel pan = new JPanel(null);
@@ -27,8 +31,15 @@ public class RaceHorseFrame extends JFrame {
 		pan.add(lineLbl);
 		pan.add(flagLbl);
 		
+		JPanel panN = new JPanel();
+		
+		JButton btnBeting = new JButton("게임배팅");
 		JButton btnStart = new JButton("게임시작");
+		btnBeting.addActionListener(btnL);
 		btnStart.addActionListener(btnL);
+		panN.add(combo);
+		panN.add(btnBeting);
+		panN.add(btnStart);
 		
 		for (int i = 0; i < horses.length; i++) {
 			icon = new ImageIcon("images/small_horse"+(i+1)+".gif");
@@ -40,10 +51,10 @@ public class RaceHorseFrame extends JFrame {
 		
 		
 		add(pan, "Center");
-		add(btnStart, "North");
+		add(panN, "North");
 		setTitle("경주마게임");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setBounds(50, 30, 620, 500);
+		setBounds(50, 30, 620, 520);
 		setVisible(true);
 		setResizable(false);		
 	}
@@ -56,10 +67,18 @@ public class RaceHorseFrame extends JFrame {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			for (int i = 0; i < horses.length; i++) {
-				HorseThread t = new HorseThread(horses[i],"stop_horse"+(i+1), i);
-				t.start();
+			switch (e.getActionCommand()) {
+			case "게임배팅":
+				betingIndex = combo.getSelectedIndex();
+				break;
+			case "게임시작":
+				for (int i = 0; i < horses.length; i++) {
+					HorseThread t = new HorseThread(horses[i],"stop_horse"+(i+1), i);
+					t.start();
+				}
+				break;
 			}
+			
 		}
 	};
 
@@ -83,7 +102,11 @@ public class RaceHorseFrame extends JFrame {
 					lblHorse.setIcon(new ImageIcon("images/"+stopImageName+".gif"));
 					winnerIndex[index++] = horseIndex;
 					if(index == horses.length-1) {
-						JOptionPane.showMessageDialog(RaceHorseFrame.this, "축하합니다. "+(winnerIndex[0]+1)+"말이 우승!!!");
+						JOptionPane.showMessageDialog(RaceHorseFrame.this, (winnerIndex[0]+1)+"말이 우승!!!");
+						if(winnerIndex[0]==betingIndex)
+							JOptionPane.showMessageDialog(RaceHorseFrame.this, "축하합니다. 배팅에 성공하였습니다.");
+						else
+							JOptionPane.showMessageDialog(RaceHorseFrame.this, "다음에 다시 배팅 부탁드려요~. 배팅에 실패하였습니다.");
 						index = 0;
 						for (int i = 0; i < horses.length; i++) {
 							horses[i].setLocation(0, horses[i].getY());
@@ -91,8 +114,6 @@ public class RaceHorseFrame extends JFrame {
 						}
 						
 					}
-//					lblHorse.setLocation(0, lblHorse.getY());
-//					lblHorse.setIcon(new ImageIcon("images/"+moveImageName+".gif"));
 					break;
 				}
 				try {
